@@ -13,7 +13,7 @@ jobs:
       - checkout
 
       # specify any bash command here prefixed with `run: `
-      - run: echo "deb http://apt.postgresql.org/pub/repos/apt/dists/trusty-pgdg main" | sudo tee -a /etc/apt/sources.list
+      - run: echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" | sudo tee -a /etc/apt/sources.list
       - run: sudo apt-get install postgres
       - run: go get -v -t -d ./...
       - run: go get github.com/kardianos/govendor
