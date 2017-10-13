@@ -19,7 +19,7 @@ jobs:
       - run: go get github.com/kardianos/govendor
       - run: govendor sync
       - run:
-        name: Run Tests
-        command: go test -v ./...
-        environment:
-          PATH: /usr/lib/postgresql/9.6/bin:$PATH
+          name: Run Tests
+          command: go test -v ./...
+          environment:
+            PATH: /usr/lib/postgresql/9.6/bin:$PATH
