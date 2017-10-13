@@ -230,10 +230,10 @@ func StartTestDB(dbDir string, dbName string) (pid int, err error) {
 
 		return pid, err
 
-	} else {
-		err = errors.New("Postgres is already running.")
-		return pid, err
 	}
+
+	err = errors.New("Postgres is already running.")
+	return pid, err
 }
 
 // StringInSlice Checks to see if string given is in the slice given.
