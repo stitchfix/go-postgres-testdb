@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-var PgStarted bool
-
 func PostgresInstalled() (missing []string, ok bool) {
 	executables := []string{
 		"postgres",

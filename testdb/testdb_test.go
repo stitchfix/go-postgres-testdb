@@ -43,6 +43,7 @@ func TestPostgresInstalled(t *testing.T) {
 
 	if !ok {
 		fmt.Printf("Missing Postgres executables:", missing)
+		t.Fail()
 	}
 }
 
