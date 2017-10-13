@@ -21,7 +21,7 @@ jobs:
       - checkout
 
       # specify any bash command here prefixed with `run: `
-      - run: apt-get install postgres
+      - run: sudo apt-get install postgres
       - run: go get -v -t -d ./...
       - run: go get github.com/kardianos/govendor
       - run: govendor sync
