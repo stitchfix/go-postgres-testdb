@@ -3,7 +3,13 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/stitchfix/go-postgres-testdb)](https://goreportcard.com/report/github.com/stitchfix/go-postgres-testdb)
 
-A helper library for managing ephemeral test databases in Postgres
+A helper library for managing ephemeral test databases in Postgres.
+
+It won't do anything if Postgres is not installed, or is currently running, but if the binaries are available, this library will allow you to create an ephemeral database, use it for the life of a test, and then clean up afterwards.
+
+It was created cos there's currently no 'in memory' postgres clone that can be used for testing.
+
+It's intended to be used on a laptop, or within an ephemeral container, not anyplace where a real production postgres instance is being used.
 
 
 In a test, set up the following:
