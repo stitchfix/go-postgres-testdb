@@ -13,8 +13,8 @@ jobs:
       - checkout
 
       # specify any bash command here prefixed with `run: `
-      - run: wget https://oscg-downloads.s3.amazonaws.com/packages/postgresql-9.6.5-1-x64-bigsql.deb -O /tmp/postgresql.deb
-      - run: sudo dpkg -i /tmp/postgresql.deb
+      - run: echo "http://apt.postgresql.org/pub/repos/apt/dists/trusty-pgdg main" sudo tee -a /etc/apt/sources.list
+      - run: sudo apt-get install postgres
       - run: go get -v -t -d ./...
       - run: go get github.com/kardianos/govendor
       - run: govendor sync
