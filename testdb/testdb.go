@@ -122,7 +122,7 @@ func StopPostgres(pid int) (err error) {
 func CreateTestDb(dbName string) (err error) {
 	path, err := exec.LookPath("createdb")
 	if err != nil {
-		fmt.Printf("Command createdb doens't exist")
+		fmt.Printf("Command createdb doesn't exist")
 		return err
 	}
 
