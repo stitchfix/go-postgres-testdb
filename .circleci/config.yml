@@ -13,8 +13,8 @@ jobs:
       - checkout
 
       # specify any bash command here prefixed with `run: `
-      - run: wget https://www.openscg.com/bigsql/oscg_download?file=packages/postgresql-9.6.5-1-x64-bigsql.deb
-      - run: sudo dpkg -i postgresql-9.6.5-1-x64-bigsql.deb
+      - run: wget https://www.openscg.com/bigsql/oscg_download?file=packages/postgresql-9.6.5-1-x64-bigsql.deb -o /tmp/postgresql.deb
+      - run: sudo dpkg -i /tmp/postgresql.deb
       - run: go get -v -t -d ./...
       - run: go get github.com/kardianos/govendor
       - run: govendor sync
