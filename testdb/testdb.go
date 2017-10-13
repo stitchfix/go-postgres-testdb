@@ -38,8 +38,7 @@ func PostgresInstalled() (missing []string, ok bool) {
 
 }
 
-// PostgresRunning()
-// Detect if postgres process is currently running
+// PostgresRunning Detect if postgres process is currently running
 func PostgresRunning() (running bool, err error) {
 	processes, err := ps.Processes()
 	if err != nil {
