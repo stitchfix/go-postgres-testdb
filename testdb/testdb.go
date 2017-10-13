@@ -11,8 +11,7 @@ import (
 	"time"
 )
 
-// PostgresInstalled()
-// Tests to see whether Postgres binaries are installed and available to the command shell
+// PostgresInstalled Tests to see whether Postgres binaries are installed and available to the command shell
 func PostgresInstalled() (missing []string, ok bool) {
 	executables := []string{
 		"postgres",
