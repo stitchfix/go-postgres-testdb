@@ -22,4 +22,4 @@ jobs:
           name: Run Tests
           command: go test -v ./...
           environment:
-            PATH: /usr/lib/postgresql/9.6/bin:$PATH
+            PATH: /usr/lib/postgresql/9.6/bin:/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
