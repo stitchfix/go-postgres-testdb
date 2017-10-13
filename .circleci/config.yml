@@ -18,6 +18,7 @@ jobs:
       - run: go get -v -t -d ./...
       - run: go get github.com/kardianos/govendor
       - run: govendor sync
+      - run: sudo chown -R circleci /var/run/postgresql
       - run:
           name: Run Tests
           command: go test -v ./...
