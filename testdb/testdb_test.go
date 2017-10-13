@@ -98,7 +98,7 @@ func TestStartStopPostgres(t *testing.T) {
 
 		err = InitDbDir(dbDir)
 		if err != nil {
-			fmt.Printf("Error initialiing db dir %q: %s", tempDir, err)
+			fmt.Printf("Error initialiing db dir %q: %s\n", tempDir, err)
 			t.Fail()
 		}
 
@@ -107,7 +107,7 @@ func TestStartStopPostgres(t *testing.T) {
 		pid, err := StartPostgres(dbDir)
 
 		if err != nil {
-			fmt.Printf("Error starting postgres: %s", err)
+			fmt.Printf("Error starting postgres: %s\n", err)
 			t.Fail()
 		}
 
@@ -121,7 +121,7 @@ func TestStartStopPostgres(t *testing.T) {
 		running, err = PostgresRunning()
 
 		if err != nil {
-			fmt.Printf("Error checking to see if Postgres is running: %s", err)
+			fmt.Printf("Error checking to see if Postgres is running: %s\n", err)
 			t.Fail()
 		}
 
@@ -130,7 +130,7 @@ func TestStartStopPostgres(t *testing.T) {
 		err = CreateTestDb(dbName)
 
 		if err != nil {
-			fmt.Printf("Error creating testdb %q: %s", dbName, err)
+			fmt.Printf("Error creating testdb %q: %s\n", dbName, err)
 			t.Fail()
 		}
 
@@ -156,7 +156,7 @@ func TestStartStopPostgres(t *testing.T) {
 		running, err = PostgresRunning()
 
 		if err != nil {
-			fmt.Printf("Error checking to see if Postgres is running: %s", err)
+			fmt.Printf("Error checking to see if Postgres is running: %s\n", err)
 			t.Fail()
 		}
 
@@ -183,7 +183,7 @@ func TestStartTestDB(t *testing.T) {
 	running, err := PostgresRunning()
 
 	if err != nil {
-		fmt.Printf("Error checking to see if Postgres is running: %s", err)
+		fmt.Printf("Error checking to see if Postgres is running: %s\n", err)
 		t.Fail()
 	}
 
@@ -191,7 +191,7 @@ func TestStartTestDB(t *testing.T) {
 		fmt.Println("Starting Postgres.")
 		pid, err := StartTestDB(dbDir, dbName)
 		if err != nil {
-			fmt.Printf("Failed to start test db %q: %s", dbName, err)
+			fmt.Printf("Failed to start test db %q: %s\n", dbName, err)
 		}
 
 		fmt.Println("Success!")
@@ -200,7 +200,7 @@ func TestStartTestDB(t *testing.T) {
 
 		err = StopPostgres(pid)
 		if err != nil {
-			fmt.Printf("Failed to stop postgres process %d", pid)
+			fmt.Printf("Failed to stop postgres process %d\n", pid)
 			t.Fail()
 		}
 
