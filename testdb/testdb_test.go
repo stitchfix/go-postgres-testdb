@@ -42,7 +42,7 @@ func TestPostgresInstalled(t *testing.T) {
 	missing, ok := PostgresInstalled()
 
 	if !ok {
-		fmt.Printf("Missing Postgres executables:", missing)
+		fmt.Printf("Missing Postgres executables: %s", missing)
 		t.Fail()
 	}
 }
@@ -50,7 +50,7 @@ func TestPostgresInstalled(t *testing.T) {
 func TestPostgresRunning(t *testing.T) {
 	ok, err := PostgresRunning()
 	if err != nil {
-		fmt.Printf("Error checking for postgres process: %s")
+		fmt.Printf("Error checking for postgres process: %s", err)
 		t.Fail()
 	}
 

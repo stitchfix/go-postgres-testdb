@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+// PostgresInstalled()
+// Tests to see whether Postgres binaries are installed and available to the command shell
 func PostgresInstalled() (missing []string, ok bool) {
 	executables := []string{
 		"postgres",
@@ -37,7 +39,8 @@ func PostgresInstalled() (missing []string, ok bool) {
 
 }
 
-// Detect if postgres process is running
+// PostgresRunning()
+// Detect if postgres process is currently running
 func PostgresRunning() (running bool, err error) {
 	processes, err := ps.Processes()
 	if err != nil {
@@ -56,6 +59,7 @@ func PostgresRunning() (running bool, err error) {
 	return running, err
 }
 
+// InitDbDir()
 // Takes <dir> as an argument and runs initdb on that dir.
 // Returns success or failure and errors if present
 func InitDbDir(dir string) (err error) {
@@ -75,6 +79,7 @@ func InitDbDir(dir string) (err error) {
 	return err
 }
 
+// StartPostgres(dbDir string)
 // start postgres.  Keep track of whether we started it ourselves, and remember to stop it
 func StartPostgres(dbDir string) (pid int, err error) {
 	path, err := exec.LookPath("postgres")
@@ -94,6 +99,8 @@ func StartPostgres(dbDir string) (pid int, err error) {
 	return pid, err
 }
 
+// StopPostgres(pid int)
+// Stops the Postgres processes with pid of <pid>
 func StopPostgres(pid int) (err error) {
 	p, err := os.FindProcess(pid)
 	if err != nil {
@@ -119,6 +126,8 @@ func StopPostgres(pid int) (err error) {
 	return err
 }
 
+// CreateTestDb(dbName string)
+// creates a database of the name given
 func CreateTestDb(dbName string) (err error) {
 	path, err := exec.LookPath("createdb")
 	if err != nil {
@@ -139,6 +148,8 @@ func CreateTestDb(dbName string) (err error) {
 	return err
 }
 
+// DbExists(dbName string)
+// Checks whether a database of the name given exists
 func DbExists(dbName string) (exists bool, err error) {
 	path, err := exec.LookPath("psql")
 	if err != nil {
@@ -172,6 +183,9 @@ func DbExists(dbName string) (exists bool, err error) {
 	return exists, err
 }
 
+// StartTestDB(dbDir string, dbName string)
+// Convenience function that performs checks and starts db, creates the db if it doesn't exist
+// and returns the pid and any errors
 func StartTestDB(dbDir string, dbName string) (pid int, err error) {
 	running, err := PostgresRunning()
 
@@ -231,6 +245,8 @@ func StartTestDB(dbDir string, dbName string) (pid int, err error) {
 	}
 }
 
+// StringInSlice(string, list)
+// Checks to see if string is in the slice
 func StringInSlice(a string, list []string) bool {
 	for _, b := range list {
 		if b == a {
