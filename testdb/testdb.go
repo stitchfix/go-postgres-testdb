@@ -131,7 +131,7 @@ func CreateTestDb(dbName string) (err error) {
 	output, err := cmd.Output()
 
 	if err != nil {
-		fmt.Printf("Db Creation Output: %s", output)
+		fmt.Printf("Db Creation Output: %q\n", output)
 
 		return err
 	}
