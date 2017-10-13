@@ -1,4 +1,6 @@
 # go-postgres-test
+[![Circle CI](https://circleci.com/gh/stitchfix/go-postgres-testdb.svg?style=shield)](https://circleci.com/gh/stitchfix/go-postgres-testdb)
+
 
 A helper library for managing ephemeral test databases in Postgres
 

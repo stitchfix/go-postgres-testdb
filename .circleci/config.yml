@@ -23,5 +23,6 @@ jobs:
 
       # specify any bash command here prefixed with `run: `
       - run: go get -v -t -d ./...
+      - run: go get github.com/kardianos/govendor
       - run: govendor sync
       - run: go test -v ./...
