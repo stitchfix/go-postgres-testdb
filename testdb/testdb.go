@@ -142,6 +142,28 @@ func CreateTestDb(dbName string) (err error) {
 	return err
 }
 
+// CreateTestDbUser  Creates a user in the test db.
+func CreateTestDbUser(userName string) (err error) {
+	path, err := exec.LookPath("createuser")
+	if err != nil {
+		fmt.Printf("Command createuser doesn't exist")
+		return err
+	}
+
+	cmd := exec.Command(path, userName)
+
+	output, err := cmd.Output()
+
+	if err != nil {
+		fmt.Printf("User Creation Output: %q\n", output)
+
+		return err
+	}
+
+	return err
+
+}
+
 // DbExists Checks whether a database of the name given exists
 func DbExists(dbName string) (exists bool, err error) {
 	path, err := exec.LookPath("psql")
@@ -219,6 +241,11 @@ func StartTestDB(dbDir string, dbName string) (pid int, err error) {
 
 		ok, err = DbExists(dbName)
 
+		if err != nil {
+			return pid, err
+		}
+
+		err = CreateTestDbUser(dbName)
 		if err != nil {
 			return pid, err
 		}
