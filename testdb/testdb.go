@@ -1,13 +1,14 @@
 package testdb
 
 import (
-	"errors"
 	"fmt"
-	"github.com/mitchellh/go-ps"
+	"github.com/phayes/freeport"
+	"github.com/pkg/errors"
 	"os"
 	"os/exec"
+	"runtime"
+	"strconv"
 	"strings"
-	"syscall"
 	"time"
 )
 
@@ -39,19 +40,44 @@ func PostgresInstalled() (missing []string, ok bool) {
 }
 
 // PostgresRunning Detect if postgres process is currently running
-func PostgresRunning() (running bool, err error) {
-	processes, err := ps.Processes()
-	if err != nil {
-		return running, err
-	}
+func PostgresRunning(port int) (running bool, err error) {
+	if runtime.GOOS == "darwin" {
+		// lsof -n | grep PGSQL | awk '{ print $8 }' | cut -d '.' -f4
+		cmd := exec.Command("bash", "-c", "lsof -n | grep PGSQL | awk '{ print $8 }' | cut -d '.' -f4")
 
-	for _, p := range processes {
-		if p.Executable() == "postgres" {
-
-			pcall := syscall.Kill(p.Pid(), syscall.Signal(0))
-
-			running = pcall == nil
+		output, err := cmd.Output()
+		if err != nil {
+			fmt.Printf("Error running command: %s\n", err)
+			return running, err
 		}
+
+		lines := strings.Split(string(output), "\n")
+
+		if StringInSlice(strconv.Itoa(port), lines) {
+			running = true
+			return running, err
+		}
+
+	} else if runtime.GOOS == "linux" {
+		// sudo netstat -pntl | grep postgres | grep 0.0.0.0 | awk '{print $4}' | cut -d ':' -f 2
+		cmd := exec.Command("bash", "-c", "sudo netstat -pntl | grep postgres | grep 0.0.0.0 | awk '{print $4}' | cut -d ':' -f2")
+
+		output, err := cmd.Output()
+		if err != nil {
+			fmt.Printf("Error running command: %s\n", err)
+			return running, err
+		}
+
+		lines := strings.Split(string(output), "\n")
+
+		if StringInSlice(strconv.Itoa(port), lines) {
+			running = true
+			return running, err
+		}
+
+	} else {
+		err = errors.New(fmt.Sprintf("Unsuppported OS: %s", runtime.GOOS))
+		return running, err
 	}
 
 	return running, err
@@ -77,13 +103,13 @@ func InitDbDir(dir string) (err error) {
 }
 
 // StartPostgres Starts Postgres.  Keep track of whether we started it ourselves, and remember to stop it
-func StartPostgres(dbDir string) (pid int, err error) {
+func StartPostgres(dbDir string, port int) (pid int, err error) {
 	path, err := exec.LookPath("postgres")
 	if err != nil {
 		return pid, err
 	}
 
-	cmd := exec.Command(path, "-D", dbDir)
+	cmd := exec.Command(path, "-D", dbDir, "-p", strconv.Itoa(port))
 
 	err = cmd.Start()
 	if err != nil {
@@ -122,14 +148,14 @@ func StopPostgres(pid int) (err error) {
 }
 
 // CreateTestDb Creates a database of the name given
-func CreateTestDb(dbName string) (err error) {
+func CreateTestDb(dbName string, port int) (err error) {
 	path, err := exec.LookPath("createdb")
 	if err != nil {
 		fmt.Printf("Command createdb doesn't exist")
 		return err
 	}
 
-	cmd := exec.Command(path, dbName)
+	cmd := exec.Command(path, "-p", strconv.Itoa(port), dbName)
 
 	output, err := cmd.Output()
 
@@ -143,14 +169,14 @@ func CreateTestDb(dbName string) (err error) {
 }
 
 // CreateTestDbUser  Creates a user in the test db.
-func CreateTestDbUser(userName string) (err error) {
+func CreateTestDbUser(userName string, port int) (err error) {
 	path, err := exec.LookPath("createuser")
 	if err != nil {
 		fmt.Printf("Command createuser doesn't exist")
 		return err
 	}
 
-	cmd := exec.Command(path, userName)
+	cmd := exec.Command(path, "-p", strconv.Itoa(port), userName)
 
 	output, err := cmd.Output()
 
@@ -165,12 +191,12 @@ func CreateTestDbUser(userName string) (err error) {
 }
 
 // DbExists Checks whether a database of the name given exists
-func DbExists(dbName string) (exists bool, err error) {
+func DbExists(dbName string, port int) (exists bool, err error) {
 	path, err := exec.LookPath("psql")
 	if err != nil {
 		return exists, err
 	}
-	cmd := exec.Command(path, "-ltq", dbName)
+	cmd := exec.Command(path, "-ltq", dbName, "-p", strconv.Itoa(port))
 
 	outputBytes, err := cmd.Output()
 
@@ -199,68 +225,73 @@ func DbExists(dbName string) (exists bool, err error) {
 }
 
 // StartTestDB Convenience function that performs checks and starts db, creates the db if it doesn't exist and returns the pid and any errors
-func StartTestDB(dbDir string, dbName string) (pid int, err error) {
-	running, err := PostgresRunning()
+func StartTestDB(dbDir string, dbName string) (pid int, port int, err error) {
+	port, err = freeport.GetFreePort()
+	if err != nil {
+		return pid, port, err
+	}
+
+	running, err := PostgresRunning(port)
 
 	if err != nil {
-		return pid, err
+		return pid, port, err
 	}
 
 	if !running {
 		err = InitDbDir(dbDir)
 		if err != nil {
-			return pid, err
+			return pid, port, err
 		}
 
-		pid, err = StartPostgres(dbDir)
+		pid, err = StartPostgres(dbDir, port)
 
 		if err != nil {
-			return pid, err
+			return pid, port, err
 		}
 
 		//give postgres a couple seconds to come up before we check it and try to create databases
 		time.Sleep(5 * time.Second)
 
-		ok, err := PostgresRunning()
+		ok, err := PostgresRunning(port)
 
 		if err != nil {
-			return pid, err
+			return pid, port, err
 		}
 
 		if !ok {
 			err = errors.New("Postgres failed to start.")
 
-			return pid, err
+			return pid, port, err
 		}
 
-		err = CreateTestDb(dbName)
+		err = CreateTestDb(dbName, port)
 
 		if err != nil {
-			return pid, err
+			return pid, port, err
 		}
 
-		ok, err = DbExists(dbName)
+		ok, err = DbExists(dbName, port)
 
 		if err != nil {
-			return pid, err
+			return pid, port, err
 		}
 
-		err = CreateTestDbUser(dbName)
+		err = CreateTestDbUser(dbName, port)
 		if err != nil {
-			return pid, err
+			return pid, port, err
 		}
 
 		if !ok {
 			err = errors.New("Testdb failed to create.")
-			return pid, err
+			return pid, port, err
 		}
 
-		return pid, err
+		return pid, port, err
 
 	}
 
 	err = errors.New("Postgres is already running.")
-	return pid, err
+	return pid, port, err
 }
 
 // StringInSlice Checks to see if string given is in the slice given.
