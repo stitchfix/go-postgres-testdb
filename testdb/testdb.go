@@ -60,7 +60,7 @@ func PostgresRunning(port int) (running bool, err error) {
 
 	} else if runtime.GOOS == "linux" {
 		// sudo netstat -pntl | grep postgres | grep 0.0.0.0 | awk '{print $4}' | cut -d ':' -f 2
-		cmd := exec.Command("bash", "-c", "sudo netstat -pntl | grep postgres | grep 0.0.0.0 | awk '{print $4}' | cut -d ':' -f2")
+		cmd := exec.Command("bash", "-c", "netstat -pntl | grep postgres | grep 0.0.0.0 | awk '{print $4}' | cut -d ':' -f2")
 
 		output, err := cmd.Output()
 		if err != nil {
