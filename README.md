@@ -5,7 +5,7 @@
 
 A helper library for managing ephemeral test databases in Postgres.
 
-It won't do anything if Postgres is not installed, or is currently running, but if the binaries are available, this library will allow you to create an ephemeral database, use it for the life of a test, and then clean up afterwards.
+It won't do anything if Postgres is not installed, but if the binaries are available, this library will allow you to create an ephemeral database, use it for the life of a test, and then clean up afterwards.
 
 It was created cos there's currently no 'in memory' postgres clone that can be used for testing.
 
@@ -41,17 +41,18 @@ In a test, set up the following:
             dbName = "fargle"
             dbDir = fmt.Sprintf("%s/%s", tempDir, dbName)
 
-            running, err := PostgresRunning()
+            dbPid, dbPort, err = StartTestDB(dbDir, dbName)
             if err != nil {
-                fmt.Printf("Error checking to see if Postgres is running: %s", err)
-                os.Exit(1)
+                fmt.Printf("Failed to start test db %q: %s", dbName, err)
             }
-
-            if !running {
-                dbPid, err = StartTestDB(dbDir, dbName)
-                if err != nil {
-                    fmt.Printf("Failed to start test db %q: %s", dbName, err)
-                }
+            
+            running, err := PostgresRunning(dbPort)
+            if err != nil {
+                fmt.Printf("Error Checking to see if postgres is running: %s", err)
+                os.Exit(1
+            }
+            if running {
+                fmt.Printf("Postgres is running with pid %d on port %d", dbPid, dbPort)
             }
         }
 
