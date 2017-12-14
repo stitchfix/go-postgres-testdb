@@ -13,8 +13,9 @@ jobs:
       - checkout
 
       # specify any bash command here prefixed with `run: `
-      - run: echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" | sudo tee -a /etc/apt/sources.list
-      - run: sudo apt-get install postgresql-all
+      - run: echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" | sudo tee -a /etc/apt/sources.list
+      - run: DEBIAN_FRONTEND=noninteractive sudo apt-get update && DEBIAN_FRONTEND=noninteractive sudo apt-get upgrade
+      - run: DEBIAN_FRONTEND=noninteractive sudo apt-get install postgresql-all
       - run: go get -v -t -d ./...
       - run: go get github.com/kardianos/govendor
       - run: govendor sync
